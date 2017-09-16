@@ -28,38 +28,39 @@
        (nth aut avg)))
    cur-gen))
 
-(def automaton [1 2 0 4 5 6 3])
+(def rhythm-automaton [2 0 1 3 5 4 6])
+(def note-automaton [1 2 0 4 5 6 3])
 
-(def rhythm [4 8 4 8 2 4 4 4])
+(def rhythm [2 3 2 3 1 2 2 2])
 (def notes [2 1 2 1 2 3 4 5])
 
-(def run-automaton (partial next-gen automaton))
+(def automate-notes (partial next-gen note-automaton))
+(def automate-rhythm (partial next-gen rhythm-automaton))
 
 (defn scale-rhythm [note]
-  (if (= 0 note)
-          0
-          (/ 1 note)))
+  (/ 1 (bit-shift-left 1 note)))
 
 (next-gen notes)
 
-(run-automaton [1 1 1 1 1 4 4 4])
+(automate-notes [1 1 1 1 1 4 4 4])
 
 (automate-rhythm [1 1 1 1 1 4 4 4])
 
-(automate-rhythm rhythm)
+(map scale-rhythm rhythm)
+(map scale-rhythm (automate-notes rhythm))
 
-(take 5 (iterate run-automaton notes))
+(take 5 (iterate automate-notes notes))
 
 (def melody
-  (phrase (scale-rhythm rhythm)
+  (phrase (map scale-rhythm rhythm)
           notes))
 
-(take 5 (iterate run-automaton rhythm))
-(map scale-rhythm (flatten (take 5 (iterate run-automaton rhythm))))
+(take 5 (iterate automate-rhythm rhythm))
+(map scale-rhythm (flatten (take 5 (iterate automate-rhythm rhythm))))
 
 (def melodic-automaton
-  (phrase (map scale-rhythm (flatten (iterate run-automaton rhythm)))
-          (flatten (iterate run-automaton notes))))
+  (phrase (map scale-rhythm (flatten (iterate automate-rhythm rhythm)))
+          (flatten (iterate automate-notes notes))))
 
 (play-tune melody)
 
