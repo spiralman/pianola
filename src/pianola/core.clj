@@ -35,10 +35,10 @@
 
 (def run-automaton (partial next-gen automaton))
 
-(defn scale-rhythm [gen]
-  (map #(if (= 0 %)
+(defn scale-rhythm [note]
+  (if (= 0 note)
           0
-          (/ 1 %)) gen))
+          (/ 1 note)))
 
 (next-gen notes)
 
@@ -51,11 +51,14 @@
 (take 5 (iterate run-automaton notes))
 
 (def melody
-  (phrase rhythm
+  (phrase (scale-rhythm rhythm)
           notes))
 
+(take 5 (iterate run-automaton rhythm))
+(map scale-rhythm (flatten (take 5 (iterate run-automaton rhythm))))
+
 (def melodic-automaton
-  (phrase (flatten (iterate automate-rhythm rhythm))
+  (phrase (map scale-rhythm (flatten (iterate run-automaton rhythm)))
           (flatten (iterate run-automaton notes))))
 
 (play-tune melody)
