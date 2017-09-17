@@ -3,9 +3,8 @@
             [leipzig.temperament :as temperament]
             [leipzig.melody :refer [bpm is phrase then times where with tempo duration]]
             [leipzig.scale :as scale]
+            [reagent.core :as r]
             [pianola.core :refer [automate-music]]))
-
-(.log js/console "Hello")
 
 (defonce context (synth/audio-context))
 
@@ -16,8 +15,8 @@
    (synth/gain 0.1)))
 
 (defn play! [audiocontext notes]
-  (let [phrase (take 8 notes)
-        remainder (drop 8 notes)
+  (let [phrase (take 1 notes)
+        remainder (drop 1 notes)
         start (:time (first phrase))
         phrase-duration (* 1000 (- (duration phrase)
                                    start))]
@@ -40,11 +39,27 @@
    (where :pitch (comp scale/C scale/major))
    (play! context)))
 
-(play-tune (automate-music [[0.25 0.125 0.5 0.25 0.125 0.5 0.5]
-                            [1 2 0 4 5 6 3]]
-                           [[0.25 0.125 0.25 0.125 0.5 0.25 0.25 0.25]
-                            [2 1 2 1 2 3 4 5]]))
+;; (play-tune (automate-music [[0.25 0.125 0.5 0.25 0.125 0.5 0.5]
+;;                             [1 2 0 4 5 6 3]]
+;;                            [[0.25 0.125 0.25 0.125 0.5 0.25 0.25 0.25]
+;;                             [2 1 2 1 2 3 4 5]]))
 
 ;; (play-tune
 ;;  (phrase [0.25 0.125 0.25 0.125 0.5 0.25 0.25 0.25]
 ;;          [2 1 2 1 2 3 4 5]))
+
+(defonce app-state
+  (r/atom {:tempo 50
+           :scale (comp scale/C scale/major)}))
+
+(defn app []
+  [:div "Hello"])
+
+(defn reload []
+  (println "reloading")
+  (r/render [app app-state]
+            (.getElementById js/document "pianola")))
+
+(defn ^:export main []
+  (enable-console-print!)
+  (reload))
