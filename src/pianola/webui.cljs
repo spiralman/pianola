@@ -50,10 +50,34 @@
 
 (defonce app-state
   (r/atom {:tempo 50
-           :scale (comp scale/C scale/major)}))
+           :scale (comp scale/C scale/major)
+           :playing false
+           :automaton [[0.25 0.125 0.5 0.25 0.125 0.5 0.5]
+                       [1 2 0 4 5 6 3]]
+           :seed [[0.25 0.125 0.25 0.125 0.5 0.25 0.25 0.25]
+                  [2 1 2 1 2 3 4 5]]}))
+
+(defn slider [param value min max]
+  [:input {:type "range" :value value :min min :max max
+           :style {:width "100%"}
+           :on-change (fn [e]
+                        (swap! app-state assoc param (.-target.value e)))}])
+
+(defn toggle-playback []
+  (let [playing (:playing @app-state)]
+    [:button {:on-click (fn [e]
+                          (swap! app-state assoc :playing (not playing)))}
+     (if playing
+       "Stop"
+       "Start")]))
 
 (defn app []
-  [:div "Hello"])
+  (let [{:keys [tempo scale]} @app-state]
+    [:div
+     [:h1 "Pianola"]
+     [slider :tempo tempo 20 160]
+     [:p (str tempo " BPM")]
+     [toggle-playback]]))
 
 (defn reload []
   (println "reloading")
