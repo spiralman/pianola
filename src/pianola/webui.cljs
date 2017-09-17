@@ -17,11 +17,15 @@
 
 (defn play! [audiocontext notes]
   (let [phrase (take 8 notes)
-        remainder (drop 8 notes)]
+        remainder (drop 8 notes)
+        start (:time (first phrase))
+        phrase-duration (* 1000 (- (duration phrase)
+                                   start))]
     (if (seq? remainder)
-      (js/setTimeout #(play! audiocontext remainder) (duration phrase)))
+      (js/setTimeout #(play! audiocontext remainder) phrase-duration))
     (doseq [{:keys [time duration] :as note} phrase]
-      (let [at (+ time (synth/current-time audiocontext))
+      (let [at (- (+ time (synth/current-time audiocontext))
+                  start)
             synth-instance (-> note
                                (update :pitch temperament/equal)
                                (dissoc :time)
