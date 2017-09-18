@@ -78,7 +78,7 @@
   (let [{:keys [context playing]} @app-state
         {:keys [time duration] :as note} (first notes)
         remainder (rest notes)
-        at (+ time (synth/current-time context))
+        at (synth/current-time context)
         synth-instance (-> note
                            (update :pitch temperament/equal)
                            (dissoc :time)
