@@ -78,12 +78,13 @@
        "Start")]))
 
 (defn app []
-  (let [{:keys [tempo scale]} @app-state]
+  (let [{:keys [tempo scale automaton seed]} @app-state]
     [:div
      [:h1 "Pianola"]
      [slider :tempo tempo 20 160]
      [:p (str tempo " BPM")]
-     [notation]
+     [notation automaton]
+     [notation seed]
      [playback-toggle]]))
 
 (defn reload []
