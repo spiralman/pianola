@@ -4,49 +4,14 @@
             [leipzig.melody :refer [bpm is phrase then times where with tempo duration]]
             [leipzig.scale :as scale]
             [reagent.core :as r]
-            [pianola.core :refer [automate-music]]))
+            [pianola.core :refer [automate-music]]
+            [pianola.notation :refer [notation]]))
 
 (defn ping [{:keys [pitch]}]
   (synth/connect->
    (synth/square pitch)
    (synth/percussive 0.01 0.4)
    (synth/gain 0.1)))
-
-;; (defonce context (synth/audio-context))
-
-;; (defn play! [audiocontext notes]
-;;   (let [phrase (take 1 notes)
-;;         remainder (drop 1 notes)
-;;         start (:time (first phrase))
-;;         phrase-duration (* 1000 (- (duration phrase)
-;;                                    start))]
-;;     (if (seq? remainder)
-;;       (js/setTimeout #(play! audiocontext remainder) phrase-duration))
-;;     (doseq [{:keys [time duration] :as note} phrase]
-;;       (let [at (- (+ time (synth/current-time audiocontext))
-;;                   start)
-;;             synth-instance (-> note
-;;                                (update :pitch temperament/equal)
-;;                                (dissoc :time)
-;;                                ping)
-;;             connected-instance (synth/connect synth-instance synth/destination)]
-;;         (connected-instance audiocontext at duration)))))
-
-;; (defn play-tune [tune]
-;;   (->>
-;;    tune
-;;    (tempo (bpm 50))
-;;    (where :pitch (comp scale/C scale/major))
-;;    (play! context)))
-
-;; (play-tune (automate-music [[0.25 0.125 0.5 0.25 0.125 0.5 0.5]
-;;                             [1 2 0 4 5 6 3]]
-;;                            [[0.25 0.125 0.25 0.125 0.5 0.25 0.25 0.25]
-;;                             [2 1 2 1 2 3 4 5]]))
-
-;; (play-tune
-;;  (phrase [0.25 0.125 0.25 0.125 0.5 0.25 0.25 0.25]
-;;          [2 1 2 1 2 3 4 5]))
 
 (defonce initial-automaton
   [[0.25 0.125 0.5 0.25 0.125 0.5 0.5]
@@ -118,6 +83,7 @@
      [:h1 "Pianola"]
      [slider :tempo tempo 20 160]
      [:p (str tempo " BPM")]
+     [notation]
      [playback-toggle]]))
 
 (defn reload []

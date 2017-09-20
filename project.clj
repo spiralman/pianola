@@ -16,6 +16,11 @@
               :builds [{:id "dev"
                         :source-paths ["src"]
                         :figwheel {:on-jsload "pianola.webui/reload"}
-                        :compiler {:main "pianola.webui"}
+                        :compiler {:main "pianola.webui"
+                                   :install-deps true
+                                   :infer-externs true
+                                   :foreign-libs [{:file "libs/vexflow-debug.js"
+                                                   :file-min "libs/vexflow-min.js"
+                                                   :provides ["vexflow"]}]}
                         }]
               })
