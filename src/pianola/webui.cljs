@@ -63,19 +63,20 @@
                            (dissoc :time)
                            ping)
         connected-instance (synth/connect synth-instance synth/destination)]
-    (if (and (seq? remainder)
-             playing)
-      (js/setTimeout #(play-next! remainder) (* 1000 duration)))
+    (js/setTimeout #(swap! app-state assoc :music remainder) (* 1000 duration))
     (connected-instance context at duration)))
 
 (defmulti toggle-playback identity)
 
-(defmethod toggle-playback true [_]
-  (swap! app-state assoc :playing true)
-  (play-next! (:music @app-state)))
-
-(defmethod toggle-playback false [_]
-  (swap! app-state assoc :playing false))
+(defn playback-toggle []
+  (let [{:keys [playing music]} @app-state]
+    (if playing
+      (play-next! music))
+    [:button {:on-click (fn [e]
+                          (swap! app-state assoc :playing (not playing)))}
+     (if playing
+       "Stop"
+       "Start")]))
 
 (defn slider [param value min max]
   [:input {:type "range" :value value :min min :max max
@@ -89,25 +90,17 @@
                          (swap! app-state assoc param (keyword (.-target.value e))))}
    (map (fn [v] [:option {:key v :value v} (str v)]) options)])
 
-
-(defn playback-toggle []
-  (let [playing (:playing @app-state)]
-    [:button {:on-click (fn [e]
-                          (toggle-playback (not playing)))}
-     (if playing
-       "Stop"
-       "Start")]))
-
 (defn app []
-  (let [{:keys [tempo scale automaton seed]} @app-state]
+  (let [{:keys [tempo scale automaton seed music]} @app-state]
     [:div
      [:h1 "Pianola"]
      [slider :tempo tempo 20 160]
      [:p (str tempo " BPM")]
      [selector :scale scale (keys scales)]
      [:p "Scale"]
-     [notation automaton]
-     [notation seed]
+     ;; [notation automaton]
+     ;; [notation seed]
+     [notation {:music (take 8 music)}]
      [playback-toggle]]))
 
 (defn reload []
