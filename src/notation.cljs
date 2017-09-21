@@ -18,7 +18,7 @@
   (* 4 (reduce + (map :duration phrase))))
 
 (defn render-phrase [context phrase]
-  (let [stave (-> (js/Vex.Flow.Stave. 10 40 400)
+  (let [stave (-> (js/Vex.Flow.Stave. 10 0 400)
                   (.addClef "treble")
                   (.addTimeSignature "4/4")
                   (.setContext context))

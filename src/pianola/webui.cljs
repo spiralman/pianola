@@ -98,9 +98,15 @@
      [:p (str tempo " BPM")]
      [selector :scale scale (keys scales)]
      [:p "Scale"]
-     ;; [notation automaton]
-     ;; [notation seed]
-     [notation {:music (take 8 music)}]
+     [:div
+      [:h2 "Automaton"]
+      [notation {:music (apply phrase automaton)}]]
+     [:div
+      [:h2 "First Generation"]
+      [notation {:music (apply phrase seed)}]]
+     [:div
+      [:h2 "Currently Playing"]
+      [notation {:music (take 8 music)}]]
      [playback-toggle]]))
 
 (defn reload []
