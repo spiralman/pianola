@@ -4,6 +4,8 @@
             [leipzig.melody :refer [bpm is phrase then times where with tempo duration]]
             [leipzig.scale :as scale]
             [reagent.core :as r]
+            [cljss.core :refer [defstyles]]
+            [cljss.reagent :as rss :include-macros true]
             [pianola.core :refer [automate-music]]
             [pianola.notation :refer [notation]]))
 
@@ -90,23 +92,38 @@
                          (swap! app-state assoc param (keyword (.-target.value e))))}
    (map (fn [v] [:option {:key v :value v} (str v)]) options)])
 
+(rss/defstyled label :h2
+  {})
+
+(rss/defstyled row :div
+  {:display "flex"})
+
+(rss/defstyled item :div
+  {:flex-basis (with-meta #(str (int (* (/ 1 %) 100)) "%") :of)
+   :margin-right "20px"})
+
 (defn app []
   (let [{:keys [tempo scale automaton seed music]} @app-state]
     [:div
      [:h1 "Pianola"]
-     [slider :tempo tempo 20 160]
-     [:p (str tempo " BPM")]
-     [selector :scale scale (keys scales)]
-     [:p "Scale"]
-     [:div
-      [:h2 "Automaton"]
-      [notation {:music (apply phrase automaton)}]]
-     [:div
-      [:h2 "First Generation"]
-      [notation {:music (apply phrase seed)}]]
-     [:div
-      [:h2 "Currently Playing"]
-      [notation {:music (take 8 music)}]]
+     [row
+      [item {:of 2}
+       [slider :tempo tempo 20 160]
+       [:p (str tempo " BPM")]]
+      [item {:of 2}
+       [selector :scale scale (keys scales)]
+       [:p "Scale"]]]
+     [row
+      [item {:of 2}
+       [label "Automaton"]
+       [notation {:music (apply phrase automaton)}]]
+      [item {:of 2}
+       [label "First Generation"]
+       [notation {:music (apply phrase seed)}]]]
+     [row
+      [item {:of 1}
+       [label "Currently Playing"]
+       [notation {:music (take 8 music)}]]]
      [playback-toggle]]))
 
 (defn reload []
